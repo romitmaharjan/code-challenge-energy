@@ -1,6 +1,7 @@
 import { MOCK_DUE_CHARGES_API } from "../example-mocks/dueChargesAPIMock";
 import { MOCK_ENERGY_ACCOUNTS_API } from "../example-mocks/energyAccountsAPIMock";
 import { EnergyAccountWithDueCharges } from "../types/index";
+import { getHistory } from "./historyService";
 
 const fetchMockAccounts = async () => {
   const accounts = await MOCK_ENERGY_ACCOUNTS_API();
@@ -17,16 +18,20 @@ const fetchDueCharges = async () => {
 export const getAllEnergyAccounts = async () => {
   const accounts = await fetchMockAccounts();
   const dueCharges = await fetchDueCharges();
+  const paidHistory = await getHistory();
 
   return accounts.map((account) => {
-
     const pendingCharges = dueCharges
       .filter((charge) => charge.accountId === account.id)
       .reduce((acc, charge) => acc + charge.amount, 0);
 
+    const paymentsMade = paidHistory
+      .filter((payments) => payments.accountId === account.id)
+      .reduce((acc, payments) => acc + payments.amount, 0);
+
     return {
       ...account,
-      balance: pendingCharges,
+      balance: pendingCharges - paymentsMade,
     };
   });
 };

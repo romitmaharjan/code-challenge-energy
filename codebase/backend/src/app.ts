@@ -1,7 +1,9 @@
 import { Router } from "express";
 import energyAccountsRouter from "./controllers/accountsController";
-import express from 'express';
-import cors from 'cors';
+import paymentRouter from "./controllers/paymentController";
+import historyRouter from "./controllers/historyController";
+import express from "express";
+import cors from "cors";
 
 const app = express();
 
@@ -10,7 +12,9 @@ app.use(express.json());
 
 const api = Router()
   .use(energyAccountsRouter)
+  .use(paymentRouter)
+  .use(historyRouter);
 
-app.use('/api', api);
+app.use("/api", api);
 
 export default app;
